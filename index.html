@@ -15,15 +15,24 @@
       min-height: 100vh;
     }
 
-    /* Responsive layout: stack sidebar on top for narrow screens */
+    /* Breakpoint 1: Medium screens (up to 1024px) */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 40% !important;
+      }
+      .main-content {
+        width: 60% !important;
+      }
+    }
+
+    /* Breakpoint 2: Small screens (up to 768px) */
     @media (max-width: 768px) {
       body {
         flex-direction: column;
       }
-
       .sidebar,
       .main-content {
-        width: 100%;
+        width: 100% !important;
         height: auto;
       }
     }
@@ -140,7 +149,7 @@
       font-size: 14px;
     }
 
-    /* Input with Icon (for adding text/radio/checkbox questions) */
+    /* Input with Icon */
     .input-with-icon {
       position: relative;
     }
@@ -160,9 +169,12 @@
       cursor: pointer;
       border-radius: 6px;
       padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Icon button style for standalone buttons */
+    /* Standalone Icon Button */
     .icon-btn-standalone {
       width: 100%;
       margin-top: 20px;
@@ -182,7 +194,7 @@
       background: linear-gradient(45deg, #d94f5b, #c84c50);
     }
 
-    /* Table Grid Selector Styles */
+    /* Table Grid Selector */
     #tableGridContainer {
       margin-top: 15px;
       width: 100%;
@@ -204,7 +216,7 @@
     }
     .grid-cell {
       width: 100%;
-      padding-top: 100%; /* Square cells */
+      padding-top: 100%;
       position: relative;
       border: 1px solid #ddd;
       background-color: #ffecec;
@@ -235,15 +247,13 @@
       position: relative;
     }
 
-    /* Header Section (Title + Add Logo Card) */
+    /* Header Section (PDF Title + Add Logo Card) */
     .header-section {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
     }
-
-    /* PDF Title Display */
     #pdfTitleDisplay {
       font-size: 42px;
       font-weight: 400;
@@ -353,25 +363,21 @@
         <div class="icon">T</div>
         <label>Text</label>
       </div>
-
       <!-- Radio Card -->
       <div class="sidebar-card" data-target="radioForm" onclick="showForm('radioForm')">
         <div class="icon">○</div>
         <label>Radio</label>
       </div>
-
       <!-- Dropdown Card -->
       <div class="sidebar-card" data-target="dropdownForm" onclick="showForm('dropdownForm')">
         <div class="icon">▼</div>
         <label>Dropdown</label>
       </div>
-
       <!-- Checkbox Card -->
       <div class="sidebar-card" data-target="checkboxForm" onclick="showForm('checkboxForm')">
         <div class="icon">☑</div>
         <label>Checkbox</label>
       </div>
-
       <!-- Table Card -->
       <div class="sidebar-card" data-target="tableForm" onclick="showForm('tableForm')">
         <div class="icon">▦</div>
@@ -379,8 +385,8 @@
       </div>
     </div>
 
-    <!-- Forms (Input Sections) -->
-    <!-- Text Form (default active) -->
+    <!-- Option Forms -->
+    <!-- Text Form -->
     <div id="textForm" class="option-form active">
       <h4>Add Text Question</h4>
       <label for="textQuestionInput">Question:</label>
@@ -435,7 +441,6 @@
     <!-- Table Form -->
     <div id="tableForm" class="option-form">
       <h4>Add Table</h4>
-      <!-- Table grid selector -->
       <div id="tableGridContainer">
         <div id="tableSizeDisplay">0 x 0</div>
         <div id="tableGrid"></div>
@@ -446,41 +451,38 @@
 
   <!-- Main Content -->
   <div class="main-content" id="generatedForm">
-    <!-- Header: Title on the left, Add Logo Card on the right -->
+    <!-- Header Section: PDF Title + Add Logo Card -->
     <div class="header-section">
       <div id="pdfTitleDisplay"></div>
-      <!-- The Add Logo card -->
       <div class="add-logo-card" id="addLogoCard" onclick="document.getElementById('logoInput').click()">
-        <!-- Inline SVG shield icon -->
         <svg class="logo-icon" viewBox="0 0 512 512">
           <path d="M256 0C163 0 91 43 91 43v192c0 117.1 78.2 226.6 165 277 86.9-50.4 165-159.9 165-277V43S349 0 256 0z"/>
         </svg>
         <div class="add-logo-text">Add Logo Here</div>
       </div>
     </div>
-
-    <!-- Example heading (optional) -->
     <h2>Your Form Will Appear Here</h2>
   </div>
 
   <!-- Hidden File Input for Logo Upload -->
   <input type="file" id="logoInput" style="display:none;" accept="image/*" onchange="handleLogoUpload(event)">
 
-  <!-- JavaScript -->
   <script>
     // Show the form corresponding to the selected card and hide the others.
     function showForm(formId) {
-      document.querySelectorAll('.option-form').forEach(form => {
-        form.classList.remove('active');
-      });
-      document.querySelectorAll('.sidebar-card').forEach(card => {
-        card.classList.remove('active');
-      });
-      const formToShow = document.getElementById(formId);
+      var optionForms = document.querySelectorAll('.option-form');
+      for (var i = 0; i < optionForms.length; i++) {
+        optionForms[i].classList.remove('active');
+      }
+      var sidebarCards = document.querySelectorAll('.sidebar-card');
+      for (var j = 0; j < sidebarCards.length; j++) {
+        sidebarCards[j].classList.remove('active');
+      }
+      var formToShow = document.getElementById(formId);
       if (formToShow) {
         formToShow.classList.add('active');
       }
-      const activeCard = document.querySelector(`.sidebar-card[data-target="${formId}"]`);
+      var activeCard = document.querySelector('.sidebar-card[data-target="' + formId + '"]');
       if (activeCard) {
         activeCard.classList.add('active');
       }
@@ -488,53 +490,50 @@
 
     // Update the PDF title dynamically as the user types.
     function updatePDFTitle() {
-      const title = document.getElementById('pdfTitleInput').value.trim();
+      var title = document.getElementById('pdfTitleInput').value.trim();
       document.getElementById('pdfTitleDisplay').innerText = title;
     }
 
     // Add a Text question to the main content.
     function addTextQuestion() {
-      const question = document.getElementById('textQuestionInput').value.trim();
+      var question = document.getElementById('textQuestionInput').value.trim();
       if (question) {
-        document.getElementById('generatedForm').insertAdjacentHTML(
-          'beforeend',
+        document.getElementById('generatedForm').insertAdjacentHTML('beforeend',
           `<div class="form-group">
               <label>${question}</label>
               <input type="text">
-          </div>`
-        );
+          </div>`);
         document.getElementById('textQuestionInput').value = '';
       }
     }
 
-    // Create a dynamic option input for Radio, Dropdown, or Checkbox
+    // Create a dynamic option input for Radio, Dropdown, or Checkbox.
     function createOptionInput(containerId) {
-      const input = document.createElement('input');
+      var input = document.createElement('input');
       input.type = 'text';
       input.className = 'option-input';
       input.placeholder = 'Enter option';
       input.style.marginBottom = '5px';
       input.addEventListener('input', function () {
-        const container = document.getElementById(containerId);
-        const inputs = container.querySelectorAll('input');
+        var container = document.getElementById(containerId);
+        var inputs = container.querySelectorAll('input');
         if (inputs[inputs.length - 1] === input && input.value.trim() !== '') {
-          const newInput = createOptionInput(containerId);
+          var newInput = createOptionInput(containerId);
           container.appendChild(newInput);
         }
       });
       return input;
     }
 
-    // Initialize 3 dynamic inputs for each container
+    // Initialize 3 dynamic inputs for each container.
     function initOptions(containerId) {
-      const container = document.getElementById(containerId);
+      var container = document.getElementById(containerId);
       container.innerHTML = '';
-      for (let i = 0; i < 3; i++) {
+      for (var i = 0; i < 3; i++) {
         container.appendChild(createOptionInput(containerId));
       }
     }
 
-    // Initialize dynamic options & table grid on load
     window.addEventListener('load', function () {
       initOptions('radioOptionsContainer');
       initOptions('dropdownOptionsContainer');
@@ -542,22 +541,22 @@
       initTableGrid();
     });
 
-    // Add a Radio question
+    // Add a Radio question.
     function addRadioQuestion() {
-      const question = document.getElementById('radioQuestionInput').value.trim();
+      var question = document.getElementById('radioQuestionInput').value.trim();
       if (!question) return;
-      const container = document.getElementById('radioOptionsContainer');
-      const optionInputs = container.querySelectorAll('input');
-      const options = [];
-      optionInputs.forEach(input => {
+      var container = document.getElementById('radioOptionsContainer');
+      var optionInputs = container.querySelectorAll('input');
+      var options = [];
+      optionInputs.forEach(function (input) {
         if (input.value.trim() !== '') {
           options.push(input.value.trim());
         }
       });
       if (options.length === 0) return;
-      let radioHTML = `<div class="form-group">
+      var radioHTML = `<div class="form-group">
                   <label>${question}</label>`;
-      options.forEach(opt => {
+      options.forEach(function (opt) {
         radioHTML += `<label style="margin-right:10px;"><input type="radio" name="${question}"> ${opt}</label>`;
       });
       radioHTML += `</div>`;
@@ -566,23 +565,23 @@
       initOptions('radioOptionsContainer');
     }
 
-    // Add a Dropdown question
+    // Add a Dropdown question.
     function addDropdownQuestion() {
-      const question = document.getElementById('dropdownQuestionInput').value.trim();
+      var question = document.getElementById('dropdownQuestionInput').value.trim();
       if (!question) return;
-      const container = document.getElementById('dropdownOptionsContainer');
-      const optionInputs = container.querySelectorAll('input');
-      const options = [];
-      optionInputs.forEach(input => {
+      var container = document.getElementById('dropdownOptionsContainer');
+      var optionInputs = container.querySelectorAll('input');
+      var options = [];
+      optionInputs.forEach(function (input) {
         if (input.value.trim() !== '') {
           options.push(input.value.trim());
         }
       });
       if (options.length === 0) return;
-      let dropdownHTML = `<div class="form-group">
+      var dropdownHTML = `<div class="form-group">
                   <label>${question}</label>
                   <select>`;
-      options.forEach(opt => {
+      options.forEach(function (opt) {
         dropdownHTML += `<option>${opt}</option>`;
       });
       dropdownHTML += `</select></div>`;
@@ -591,22 +590,22 @@
       initOptions('dropdownOptionsContainer');
     }
 
-    // Add a Checkbox question
+    // Add a Checkbox question.
     function addCheckboxQuestion() {
-      const question = document.getElementById('checkboxQuestionInput').value.trim();
+      var question = document.getElementById('checkboxQuestionInput').value.trim();
       if (!question) return;
-      const container = document.getElementById('checkboxOptionsContainer');
-      const optionInputs = container.querySelectorAll('input');
-      const options = [];
-      optionInputs.forEach(input => {
+      var container = document.getElementById('checkboxOptionsContainer');
+      var optionInputs = container.querySelectorAll('input');
+      var options = [];
+      optionInputs.forEach(function (input) {
         if (input.value.trim() !== '') {
           options.push(input.value.trim());
         }
       });
       if (options.length === 0) return;
-      let checkboxHTML = `<div class="form-group generated-checkbox">
+      var checkboxHTML = `<div class="form-group generated-checkbox">
                   <label>${question}</label>`;
-      options.forEach(opt => {
+      options.forEach(function (opt) {
         checkboxHTML += `<label><input type="checkbox" name="${question}"> ${opt}</label>`;
       });
       checkboxHTML += `</div>`;
@@ -615,15 +614,14 @@
       initOptions('checkboxOptionsContainer');
     }
 
-    // Table Grid Selector for Table Form
-    let selectedRows = 0, selectedCols = 0;
+    // Table Grid Selector for Table Form.
+    var selectedRows = 0, selectedCols = 0;
     function initTableGrid() {
-      const grid = document.getElementById('tableGrid');
+      var grid = document.getElementById('tableGrid');
       grid.innerHTML = '';
-      // Create a 10x10 grid
-      for (let r = 1; r <= 10; r++) {
-        for (let c = 1; c <= 10; c++) {
-          const cell = document.createElement('div');
+      for (var r = 1; r <= 10; r++) {
+        for (var c = 1; c <= 10; c++) {
+          var cell = document.createElement('div');
           cell.className = 'grid-cell';
           cell.dataset.row = r;
           cell.dataset.col = c;
@@ -634,45 +632,42 @@
       }
     }
     function handleCellMouseOver(e) {
-      const cell = e.target;
+      var cell = e.target;
       selectedRows = parseInt(cell.dataset.row);
       selectedCols = parseInt(cell.dataset.col);
       updateTableGridDisplay();
     }
     function updateTableGridDisplay() {
-      const grid = document.getElementById('tableGrid');
-      const cells = grid.querySelectorAll('.grid-cell');
-      cells.forEach(cell => {
-        const r = parseInt(cell.dataset.row);
-        const c = parseInt(cell.dataset.col);
+      var grid = document.getElementById('tableGrid');
+      var cells = grid.querySelectorAll('.grid-cell');
+      cells.forEach(function (cell) {
+        var r = parseInt(cell.dataset.row);
+        var c = parseInt(cell.dataset.col);
         if (r <= selectedRows && c <= selectedCols) {
           cell.classList.add('hovered');
         } else {
           cell.classList.remove('hovered');
         }
       });
-      document.getElementById('tableSizeDisplay').innerText = `${selectedRows} x ${selectedCols}`;
+      document.getElementById('tableSizeDisplay').innerText = selectedRows + " x " + selectedCols;
     }
     function handleCellClick(e) {
       if (selectedRows > 0 && selectedCols > 0) {
         addTable(selectedRows, selectedCols);
-        // Reset grid selection
         selectedRows = 0;
         selectedCols = 0;
         updateTableGridDisplay();
       }
     }
     function addTable(rows, cols) {
-      let tableHTML = `<table><tr>`;
-      // Create header row (editable headers)
-      for (let c = 1; c <= cols; c++) {
+      var tableHTML = `<table><tr>`;
+      for (var c = 1; c <= cols; c++) {
         tableHTML += `<th contenteditable="true">Header ${c}</th>`;
       }
       tableHTML += `</tr>`;
-      // Create data rows
-      for (let r = 1; r <= rows; r++) {
+      for (var r = 1; r <= rows; r++) {
         tableHTML += `<tr>`;
-        for (let c = 1; c <= cols; c++) {
+        for (var c = 1; c <= cols; c++) {
           tableHTML += `<td><input type="text"></td>`;
         }
         tableHTML += `</tr>`;
@@ -686,19 +681,16 @@
       updateTableGridDisplay();
     }
 
-    // Handle Logo Upload and display preview in the Add Logo card.
+    // Handle Logo Upload.
     function handleLogoUpload(event) {
-      const file = event.target.files[0];
+      var file = event.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = function (evt) {
-          const logoCard = document.getElementById('addLogoCard');
-          logoCard.innerHTML = `
-            <div class="logo-preview">
+        var reader = new FileReader();
+        reader.onload = function(evt) {
+          var logoCard = document.getElementById('addLogoCard');
+          logoCard.innerHTML = `<div class="logo-preview">
               <img src="${evt.target.result}" alt="Logo Preview" style="max-height:80px; max-width:100%; border-radius:6px;">
-            </div>
-          `;
-          // Remove the click handler so user cannot re-click to upload again
+          </div>`;
           logoCard.onclick = null;
         }
         reader.readAsDataURL(file);

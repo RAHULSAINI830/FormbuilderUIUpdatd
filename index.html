@@ -1,9 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Enhanced Form Builder UI</title>
+  <!-- Include html2pdf library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
   <style>
+    /* Download button inside Sidebar Bottom */
+    .download-sidebar-btn {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #ee5566;
+      border: none;
+      border-radius: 10px;
+      width: 150px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      font-size: 16px;
+      color: #fff;
+      transition: background-color 0.3s ease;
+    }
+
+    .download-sidebar-btn:hover {
+      background-color: #d94f5b;
+    }
+
+    .download-sidebar-btn .download-text {
+      font-weight: 600;
+    }
+
+    
+
+   
+
+   
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Top Navigation Bar */
+    nav {
+      width: 100%;
+      background-color: #fff;
+      padding: 25px 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 11000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    nav .logo img {
+      height: 40px;
+      width: auto;
+      margin-left: 50px;
+      object-fit: contain;
+    }
+
+    nav .nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-right: 50px;
+    }
+
+    nav .demo-btn,
+    nav .download-btn {
+      background-color: #ffb2bb;
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    nav .download-btn {
+      background-color: #ee5566;
+    }
+
+    nav .demo-btn svg,
+    nav .download-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: #fff;
+      fill: none;
+    }
+
     /* Global Layout */
     body {
       margin: 0;
@@ -13,26 +122,33 @@
       padding: 10px;
       gap: 10px;
       min-height: 100vh;
+      padding-top: 100px;
+      /* to clear fixed nav */
     }
+
     /* Medium Screens */
     @media (max-width: 1024px) {
       .sidebar {
         width: 40% !important;
       }
+
       .main-content {
         width: 60% !important;
       }
     }
+
     /* Small Screens */
     @media (max-width: 768px) {
       body {
         flex-direction: column;
       }
+
       .sidebar,
       .main-content {
         width: 100% !important;
         height: auto;
       }
+
       /* Toggle button visible on small screens */
       #toggleSidebarBtn {
         display: block;
@@ -48,19 +164,22 @@
         font-size: 16px;
       }
     }
+
     /* Hide toggle button on larger screens */
     @media (min-width: 769px) {
       #toggleSidebarBtn {
         display: none;
       }
     }
+
     /* When sidebar is hidden, let main content take full width */
-    .sidebar.hidden + .main-content {
+    .sidebar.hidden+.main-content {
       width: 100%;
     }
+
     /* Sidebar */
     .sidebar {
-      width: 30%;
+      width: 24%;
       background-color: #fff;
       border-right: 1px solid #ddd;
       padding: 25px;
@@ -70,6 +189,7 @@
       min-height: 100vh;
       position: relative;
     }
+
     /* PDF Title Section */
     .pdf-title-section {
       margin-bottom: 25px;
@@ -78,11 +198,13 @@
       border-radius: 10px;
       background-color: #fff;
     }
+
     .pdf-title-section h4 {
       margin: 0 0 10px;
       font-size: 13px;
       color: #9b9b9b;
     }
+
     .pdf-title-section input[type="text"] {
       width: 100%;
       padding: 17px;
@@ -91,6 +213,7 @@
       border-radius: 6px;
       font-size: 21px;
     }
+
     /* Grid of Cards in Sidebar */
     .sidebar-grid {
       display: grid;
@@ -98,11 +221,12 @@
       gap: 20px;
       margin-bottom: 25px;
     }
+
     /* Sidebar Cards */
     .sidebar-card {
       background-color: #fff;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       text-align: center;
       padding: 25px 15px;
       cursor: pointer;
@@ -113,50 +237,59 @@
       justify-content: center;
       border: 2px solid transparent;
     }
+
     .sidebar-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
+
     .sidebar-card.active {
       border-color: #000;
       background-color: #ffe5ec;
     }
+
     .sidebar-card .icon {
-      font-size: 42px;
+      font-size: 22px;
       color: #000;
       margin-bottom: 10px;
     }
+
     .sidebar-card label {
-      font-size: 16px;
+      font-size: 12px;
       font-weight: 600;
       color: #000;
       margin: 0;
     }
+
     /* Option Forms */
     .option-form {
       display: none;
       background-color: #fff;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
       border: 1px solid #ddd;
     }
+
     .option-form.active {
       display: block;
     }
+
     .option-form h4 {
       margin-top: 0;
       font-size: 18px;
       font-weight: 600;
       color: #000;
     }
+
     .option-form label {
       display: block;
       margin-top: 15px;
       font-weight: 600;
       color: #333;
     }
+
     .option-form input[type="text"] {
       width: 100%;
       padding: 10px;
@@ -166,56 +299,54 @@
       border-radius: 6px;
       font-size: 14px;
     }
-    /* Date Option Form Enhancements */
+
+    /* Date Option: Instantly add date input */
     #dateForm {
       background-color: #fff;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       border: 1px solid #ddd;
+      text-align: center;
     }
+
     #dateForm h4 {
       margin-top: 0;
       font-size: 18px;
       font-weight: 600;
       color: #000;
     }
-    #dateForm label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 600;
-      color: #333;
-      font-size: 25px;
+
+    #dateForm button {
+      background-color: #ee5566;
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
-    #dateForm .input-with-icon {
-      position: relative;
-      margin-top: 10px;
+
+    #dateForm button svg {
+      width: 20px;
+      height: 20px;
+      stroke: #fff;
+      fill: none;
     }
-    #dateForm .input-with-icon input[type="date"] {
-      width: 100%;
-      padding: 10px 10px 10px 40px; /* extra left padding for icon */
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    #dateForm .calendar-icon {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      color: #ee5566;
-      font-size: 20px;
-    }
+
     /* Input with Icon (General) */
     .input-with-icon {
       position: relative;
     }
+
     .input-with-icon input {
       width: 100%;
       padding-right: 50px;
     }
+
     .input-with-icon .icon-btn {
       position: absolute;
       right: 10px;
@@ -232,6 +363,7 @@
       align-items: center;
       justify-content: center;
     }
+
     /* Standalone Icon Button */
     .icon-btn-standalone {
       padding: 5px;
@@ -244,19 +376,23 @@
       align-items: center;
       justify-content: center;
     }
+
     .icon-btn-standalone:hover {
       background: linear-gradient(45deg, #d94f5b, #c84c50);
     }
+
     /* Table Grid Selector */
     #tableGridContainer {
       margin-top: 15px;
       width: 100%;
     }
+
     #tableSizeDisplay {
       font-size: 14px;
       margin-bottom: 10px;
       color: #ee5566;
     }
+
     #tableGrid {
       display: grid;
       grid-template-columns: repeat(10, 1fr);
@@ -267,6 +403,7 @@
       width: 100%;
       user-select: none;
     }
+
     .grid-cell {
       width: 100%;
       padding-top: 100%;
@@ -276,17 +413,23 @@
       cursor: pointer;
       border-radius: 10px;
     }
+
     .grid-cell::after {
       content: "";
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
     }
+
     .grid-cell.hovered {
       background-color: #ee5566;
     }
+
     /* Main Content Area */
     .main-content {
-      width: 70%;
+      width: 76%;
       padding: 30px;
       box-sizing: border-box;
       overflow-y: auto;
@@ -295,6 +438,7 @@
       min-height: 100vh;
       position: relative;
     }
+
     /* Header Section */
     .header-section {
       display: flex;
@@ -302,15 +446,17 @@
       align-items: center;
       margin-bottom: 20px;
     }
+
     #pdfTitleDisplay {
       font-size: 42px;
       font-weight: 400;
       color: #000;
     }
+
     /* "Add Logo" Card */
     .add-logo-card {
       width: 200px;
-      height: 100px;
+      height: 125px;
       background-color: #fff;
       border: 1px solid #ccc;
       border-radius: 8px;
@@ -318,15 +464,18 @@
       cursor: pointer;
       transition: box-shadow 0.3s ease;
     }
+
     .add-logo-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
+
     .add-logo-card img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
     }
+
     /* Question Items Container */
     #formQuestionsContainer {
       display: grid;
@@ -335,20 +484,23 @@
       border: 1px solid #e1e5ea;
       border-radius: 8px;
       background-color: #fff;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
       padding: 20px;
     }
+
     /* Each added question item */
     .question-item {
       padding: 15px;
       position: relative;
     }
+
     .question-item label {
       display: block;
       margin-bottom: 8px;
       font-size: 25px;
       color: #000000;
     }
+
     .question-item input[type="text"],
     .question-item select {
       width: 100%;
@@ -358,6 +510,7 @@
       border-radius: 6px;
       font-size: 14px;
     }
+
     /* Options container for radio and checkbox */
     .options-container {
       display: flex;
@@ -365,18 +518,22 @@
       gap: 35px;
       margin-top: 10px;
     }
+
     .option-item {
       display: flex;
       align-items: center;
       gap: 5px;
     }
+
     .option-item input {
       transform: scale(1.2);
     }
+
     .option-item span {
       font-size: 25px;
       color: #000000;
     }
+
     /* Table Styling */
     table {
       width: 100%;
@@ -385,16 +542,20 @@
       margin-top: 20px;
       background-color: #fff;
     }
-    th, td {
+
+    th,
+    td {
       border: 1px solid #ccc;
       padding: 8px;
       text-align: left;
       font-size: 14px;
       position: relative;
     }
+
     th[contenteditable="true"] {
       background-color: #f0f0f0;
     }
+
     /* Remove Button (positioned at top-right) */
     .remove-btn {
       background: none;
@@ -407,14 +568,17 @@
       top: 10px;
       right: 10px;
     }
+
     .remove-btn svg {
       width: 100%;
       height: 100%;
       stroke: #999;
     }
+
     .remove-btn:hover svg {
       stroke: #ee5566;
     }
+
     /* Table Controls Panel (icon-only buttons) */
     .table-controls {
       margin-top: 10px;
@@ -422,28 +586,59 @@
       gap: 5px;
       flex-wrap: wrap;
     }
+
     .table-controls button {
       background: none;
       border: none;
       cursor: pointer;
       padding: 5px;
     }
+
     .table-controls button svg {
       width: 20px;
       height: 20px;
       stroke: #3b3a3a;
       fill: currentColor;
     }
+
     /* Make table questions span full width of the grid */
     .question-item.table-container {
       grid-column: 1 / -1;
     }
+
+    input[type="date"] {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+      background-color: #fff;
+      color: #333;
+    }
   </style>
 </head>
+
 <body>
+  <!-- Top Navigation Bar -->
+  <nav>
+    <div class="logo">
+      <img src="./zen fire black.png" alt="Website Logo">
+    </div>
+    <div class="nav-buttons">
+      <button class="demo-btn" onclick="window.location.href='https://zentrades.pro/book-demo'">
+        Get Demo
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+    
+  </nav>
   <!-- Toggle Sidebar Button (visible on small screens) -->
   <button id="toggleSidebarBtn" onclick="toggleSidebar()">
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 24 24" width="24" height="24">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
       <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -539,18 +734,18 @@
         <div id="tableSizeDisplay">0 x 0</div>
         <div id="tableGrid"></div>
       </div>
-      <button class="icon-btn-standalone" style="margin-top:15px; width:100%;" onclick="clearTableGrid()">Clear Selection</button>
+      <button class="icon-btn-standalone" style="margin-top:15px; width:100%;" onclick="clearTableGrid()">Clear
+        Selection</button>
     </div>
     <!-- Date Form -->
     <div id="dateForm" class="option-form">
-      <h4>Add Date Question</h4>
-      <label for="dateQuestionInput">Question:</label>
-      <div class="input-with-icon">
-        <span class="calendar-icon">&#128197;</span>
-        <input type="date" id="dateQuestionInput" placeholder="Enter your date question" style="padding-left: 40px;">
-        <button class="icon-btn" onclick="addDateQuestion()">&#43;</button>
-      </div>
+      <h4>Add Date Input</h4>
+      <!-- When the Date sidebar card is clicked, the showForm function will instantly add the date input -->
     </div>
+    <!-- Download PDF Button in Sidebar Bottom -->
+    <button class="download-sidebar-btn" id="downloadSidebarBtn" onclick="downloadPDF()">
+      Download PDF
+   
   </div>
   <!-- Main Content -->
   <div class="main-content" id="generatedForm">
@@ -558,7 +753,7 @@
     <div class="header-section">
       <div id="pdfTitleDisplay"></div>
       <div class="add-logo-card" id="addLogoCard" onclick="document.getElementById('logoInput').click()">
-        <img id="logoImg" src="./Brand It with.png" alt="Logo Placeholder">
+        <img id="logoImg" src="./Brand It with (1).png" alt="Logo Placeholder">
       </div>
     </div>
     <!-- Single container for all added questions -->
@@ -567,6 +762,24 @@
   <!-- Hidden File Input for Logo Upload -->
   <input type="file" id="logoInput" style="display:none;" accept="image/*" onchange="handleLogoUpload(event)">
   <script>
+    // Override showForm to instantly add a date input when "dateForm" is selected
+    function showForm(formId) {
+      if (formId === 'dateForm') {
+        addDateInput();
+        return;
+      }
+      document.querySelectorAll('.option-form').forEach(form => form.classList.remove('active'));
+      document.querySelectorAll('.sidebar-card').forEach(card => card.classList.remove('active'));
+      let formToShow = document.getElementById(formId);
+      if (formToShow) formToShow.classList.add('active');
+      let activeCard = document.querySelector('.sidebar-card[data-target="' + formId + '"]');
+      if (activeCard) activeCard.classList.add('active');
+    }
+    // Update PDF title.
+    function updatePDFTitle() {
+      let title = document.getElementById('pdfTitleInput').value.trim();
+      document.getElementById('pdfTitleDisplay').innerText = title;
+    }
     // Toggle sidebar visibility and update toggle button position.
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
@@ -576,17 +789,13 @@
     function updateToggleButtonPosition() {
       const toggleBtn = document.getElementById('toggleSidebarBtn');
       const sidebar = document.getElementById('sidebar');
-      // For small screens, if sidebar is visible, position button at bottom of sidebar
       if (!sidebar.classList.contains('hidden')) {
-        // Get bounding rectangle of sidebar
         const rect = sidebar.getBoundingClientRect();
-        // Position toggle button relative to document (absolute)
         toggleBtn.style.position = 'absolute';
         toggleBtn.style.left = (rect.left + rect.width - toggleBtn.offsetWidth - 10) + 'px';
         toggleBtn.style.top = (rect.top + rect.height - toggleBtn.offsetHeight - 10) + 'px';
         toggleBtn.style.bottom = '';
       } else {
-        // If sidebar hidden, position toggle button fixed at bottom left of viewport
         toggleBtn.style.position = 'fixed';
         toggleBtn.style.left = '10px';
         toggleBtn.style.bottom = '10px';
@@ -594,31 +803,15 @@
       }
     }
     window.addEventListener('resize', updateToggleButtonPosition);
-    // Run updateToggleButtonPosition on page load as well
     window.addEventListener('load', updateToggleButtonPosition);
-
-    // Show corresponding option form.
-    function showForm(formId) {
-      document.querySelectorAll('.option-form').forEach(form => form.classList.remove('active'));
-      document.querySelectorAll('.sidebar-card').forEach(card => card.classList.remove('active'));
-      let formToShow = document.getElementById(formId);
-      if(formToShow) formToShow.classList.add('active');
-      let activeCard = document.querySelector('.sidebar-card[data-target="' + formId + '"]');
-      if(activeCard) activeCard.classList.add('active');
-    }
-    // Update PDF title.
-    function updatePDFTitle() {
-      let title = document.getElementById('pdfTitleInput').value.trim();
-      document.getElementById('pdfTitleDisplay').innerText = title;
-    }
     // Remove a question item.
     function removeQuestion(btn) {
       btn.parentElement.remove();
     }
-    // Add Text Question into the single container.
+    // Add Text Question into the form section.
     function addTextQuestion() {
       let question = document.getElementById('textQuestionInput').value.trim();
-      if(question) {
+      if (question) {
         document.getElementById('formQuestionsContainer').insertAdjacentHTML('beforeend',
           `<div class="question-item">
               <button class="remove-btn" onclick="removeQuestion(this)">
@@ -636,26 +829,22 @@
         document.getElementById('textQuestionInput').value = '';
       }
     }
-    // Add Date Question into the single container.
-    function addDateQuestion() {
-      let question = document.getElementById('dateQuestionInput').value.trim();
-      if(question) {
-        document.getElementById('formQuestionsContainer').insertAdjacentHTML('beforeend',
-          `<div class="question-item">
-              <button class="remove-btn" onclick="removeQuestion(this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path d="M19 6l-1 14H6L5 6"></path>
-                  <line x1="10" y1="11" x2="10" y2="17"></line>
-                  <line x1="14" y1="11" x2="14" y2="17"></line>
-                  <path d="M9 6V4h6v2"></path>
-                </svg>
-              </button>
-              <label>${question}</label>
-              <input type="date">
-          </div>`);
-        document.getElementById('dateQuestionInput').value = '';
-      }
+    // Add Date Input directly into the form section.
+    function addDateInput() {
+      let html = `<div class="question-item" style="width:100%;">
+          <button class="remove-btn" onclick="removeQuestion(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6l-1 14H6L5 6"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+              <path d="M9 6V4h6v2"></path>
+            </svg>
+          </button>
+          <label>Date</label>
+          <input type="date">
+      </div>`;
+      document.getElementById('formQuestionsContainer').insertAdjacentHTML('beforeend', html);
     }
     // Dynamic option input for Radio/Dropdown/Checkbox.
     function createOptionInput(containerId) {
@@ -664,10 +853,10 @@
       input.className = 'option-input';
       input.placeholder = 'Enter option';
       input.style.marginBottom = '5px';
-      input.addEventListener('input', function() {
+      input.addEventListener('input', function () {
         let container = document.getElementById(containerId);
         let inputs = container.querySelectorAll('input');
-        if(inputs[inputs.length - 1] === input && input.value.trim() !== '') {
+        if (inputs[inputs.length - 1] === input && input.value.trim() !== '') {
           container.appendChild(createOptionInput(containerId));
         }
       });
@@ -676,11 +865,11 @@
     function initOptions(containerId) {
       let container = document.getElementById(containerId);
       container.innerHTML = '';
-      for(let i = 0; i < 3; i++){
+      for (let i = 0; i < 3; i++) {
         container.appendChild(createOptionInput(containerId));
       }
     }
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
       initOptions('radioOptionsContainer');
       initOptions('dropdownOptionsContainer');
       initOptions('checkboxOptionsContainer');
@@ -690,12 +879,12 @@
     // Add Radio Question.
     function addRadioQuestion() {
       let question = document.getElementById('radioQuestionInput').value.trim();
-      if(!question) return;
+      if (!question) return;
       let container = document.getElementById('radioOptionsContainer');
       let optionInputs = container.querySelectorAll('input');
       let options = [];
-      optionInputs.forEach(input => { if(input.value.trim() !== '') options.push(input.value.trim()); });
-      if(options.length === 0) return;
+      optionInputs.forEach(input => { if (input.value.trim() !== '') options.push(input.value.trim()); });
+      if (options.length === 0) return;
       let radioHTML = `<div class="question-item">
                           <button class="remove-btn" onclick="removeQuestion(this)">
                             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -708,7 +897,7 @@
                           </button>
                           <label>${question}</label>
                           <div class="options-container">`;
-      options.forEach(opt => { 
+      options.forEach(opt => {
         radioHTML += `<div class="option-item">
                         <input type="radio" name="${question}">
                         <span>${opt}</span>
@@ -722,12 +911,12 @@
     // Add Dropdown Question.
     function addDropdownQuestion() {
       let question = document.getElementById('dropdownQuestionInput').value.trim();
-      if(!question) return;
+      if (!question) return;
       let container = document.getElementById('dropdownOptionsContainer');
       let optionInputs = container.querySelectorAll('input');
       let options = [];
-      optionInputs.forEach(input => { if(input.value.trim() !== '') options.push(input.value.trim()); });
-      if(options.length === 0) return;
+      optionInputs.forEach(input => { if (input.value.trim() !== '') options.push(input.value.trim()); });
+      if (options.length === 0) return;
       let dropdownHTML = `<div class="question-item">
                           <button class="remove-btn" onclick="removeQuestion(this)">
                             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -749,12 +938,12 @@
     // Add Checkbox Question.
     function addCheckboxQuestion() {
       let question = document.getElementById('checkboxQuestionInput').value.trim();
-      if(!question) return;
+      if (!question) return;
       let container = document.getElementById('checkboxOptionsContainer');
       let optionInputs = container.querySelectorAll('input');
       let options = [];
-      optionInputs.forEach(input => { if(input.value.trim() !== '') options.push(input.value.trim()); });
-      if(options.length === 0) return;
+      optionInputs.forEach(input => { if (input.value.trim() !== '') options.push(input.value.trim()); });
+      if (options.length === 0) return;
       let checkboxHTML = `<div class="question-item">
                           <button class="remove-btn" onclick="removeQuestion(this)">
                             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -767,7 +956,7 @@
                           </button>
                           <label>${question}</label>
                           <div class="options-container">`;
-      options.forEach(opt => { 
+      options.forEach(opt => {
         checkboxHTML += `<div class="option-item">
                            <input type="checkbox" name="${question}">
                            <span>${opt}</span>
@@ -783,8 +972,8 @@
     function initTableGrid() {
       let grid = document.getElementById('tableGrid');
       grid.innerHTML = '';
-      for(let r = 1; r <= 10; r++){
-        for(let c = 1; c <= 10; c++){
+      for (let r = 1; r <= 10; r++) {
+        for (let c = 1; c <= 10; c++) {
           let cell = document.createElement('div');
           cell.className = 'grid-cell';
           cell.dataset.row = r;
@@ -805,7 +994,7 @@
       document.querySelectorAll('#tableGrid .grid-cell').forEach(cell => {
         let r = parseInt(cell.dataset.row);
         let c = parseInt(cell.dataset.col);
-        if(r <= selectedRows && c <= selectedCols) {
+        if (r <= selectedRows && c <= selectedCols) {
           cell.classList.add('hovered');
         } else {
           cell.classList.remove('hovered');
@@ -814,7 +1003,7 @@
       document.getElementById('tableSizeDisplay').innerText = selectedRows + " x " + selectedCols;
     }
     function handleCellClick(e) {
-      if(selectedRows > 0 && selectedCols > 0) {
+      if (selectedRows > 0 && selectedCols > 0) {
         addTable(selectedRows, selectedCols);
         selectedRows = 0;
         selectedCols = 0;
@@ -835,9 +1024,9 @@
                           </button>
                           <table style="width: 100%;">
                             <tr>
-                              <th></th>`; // Extra header cell for row deletion.
-      for(let c = 0; c < cols; c++){
-        tableHTML += `<th contenteditable="true">Header ${c+1}
+                              <th></th>`;
+      for (let c = 0; c < cols; c++) {
+        tableHTML += `<th contenteditable="true">Header ${c + 1}
                         <button class="remove-btn" onclick="removeSpecifiedColumn(this)">
                           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
@@ -850,7 +1039,7 @@
                       </th>`;
       }
       tableHTML += `</tr>`;
-      for(let r = 0; r < rows; r++){
+      for (let r = 0; r < rows; r++) {
         tableHTML += `<tr>
                         <td>
                           <button class="remove-btn" onclick="removeSpecifiedRow(this)">
@@ -863,23 +1052,29 @@
                             </svg>
                           </button>
                         </td>`;
-        for(let c = 0; c < cols; c++){
+        for (let c = 0; c < cols; c++) {
           tableHTML += `<td><input type="text"></td>`;
         }
         tableHTML += `</tr>`;
       }
       tableHTML += `</table>
                       <div class="table-controls">
+                        <!-- New icon for add column -->
                         <button class="icon-btn-standalone" onclick="addSpecifiedColumn(this)">
                           <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <rect x="4" y="4" width="4" height="16" fill="none" stroke="currentColor"/>
+                            <rect x="10" y="4" width="4" height="16" fill="none" stroke="currentColor"/>
+                            <rect x="16" y="4" width="4" height="16" fill="none" stroke="currentColor"/>
+                            <line x1="10" y1="2" x2="10" y2="22" stroke="currentColor" stroke-width="2"/>
                           </svg>
                         </button>
+                        <!-- New icon for add row -->
                         <button class="icon-btn-standalone" onclick="addSpecifiedRow(this)">
                           <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <rect x="4" y="4" width="16" height="4" fill="none" stroke="currentColor"/>
+                            <rect x="4" y="10" width="16" height="4" fill="none" stroke="currentColor"/>
+                            <rect x="4" y="16" width="16" height="4" fill="none" stroke="currentColor"/>
+                            <line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="2"/>
                           </svg>
                         </button>
                       </div>
@@ -891,8 +1086,8 @@
       let th = btn.parentElement;
       let index = Array.from(th.parentElement.cells).indexOf(th);
       let table = th.closest('table');
-      for(let i = 0; i < table.rows.length; i++){
-        if(table.rows[i].cells.length > index) {
+      for (let i = 0; i < table.rows.length; i++) {
+        if (table.rows[i].cells.length > index) {
           table.rows[i].deleteCell(index);
         }
       }
@@ -919,7 +1114,7 @@
         '<path d="M9 6V4h6v2"></path>' +
         '</svg></button>';
       headerRow.appendChild(newTh);
-      for(let i = 1; i < table.rows.length; i++){
+      for (let i = 1; i < table.rows.length; i++) {
         let newTd = document.createElement('td');
         newTd.innerHTML = '<input type="text">';
         table.rows[i].appendChild(newTd);
@@ -941,7 +1136,7 @@
         '<path d="M9 6V4h6v2"></path>' +
         '</svg></button>';
       newRow.appendChild(delCell);
-      for(let i = 0; i < colCount; i++){
+      for (let i = 0; i < colCount; i++) {
         let newTd = document.createElement('td');
         newTd.innerHTML = '<input type="text">';
         newRow.appendChild(newTd);
@@ -951,14 +1146,86 @@
     // Handle Logo Upload.
     function handleLogoUpload(event) {
       let file = event.target.files[0];
-      if(file) {
+      if (file) {
         let reader = new FileReader();
-        reader.onload = function(evt) {
+        reader.onload = function (evt) {
           document.getElementById('logoImg').src = evt.target.result;
         }
         reader.readAsDataURL(file);
       }
     }
+    // Download PDF: Clone main content, remove interactive elements/unwanted styling, then generate a PDF.
+    function downloadPDF() {
+  const downloadBtn = document.getElementById('downloadSidebarBtn');
+  // Disable the button and indicate progress.
+  downloadBtn.disabled = true;
+  const originalText = downloadBtn.innerText;
+  downloadBtn.innerText = "Downloading...";
+
+  // Clone and prepare the main content.
+  const sourceElement = document.getElementById('generatedForm');
+  const clonedElement = sourceElement.cloneNode(true);
+  clonedElement.style.width = "8.5in";
+
+  // Apply scaling to render the PDF at 80% size.
+  const scaleFactor = 0.8;
+  clonedElement.style.transform = `scale(${scaleFactor})`;
+  clonedElement.style.transformOrigin = "top left";
+  // Adjust width so that after scaling, it fills the PDF page.
+  clonedElement.style.width = `${8.5 / scaleFactor}in`;
+
+  // Remove interactive elements.
+  clonedElement.querySelectorAll('button, .remove-btn, .icon-btn, .icon-btn-standalone, .table-controls')
+    .forEach(el => el.remove());
+
+  // Remove background and border styling.
+  clonedElement.style.background = 'none';
+  clonedElement.style.border = 'none';
+
+  // Ensure page break settings to avoid splitting content.
+  clonedElement.querySelectorAll('.question-item, table, tr, td, th')
+    .forEach(item => item.style.pageBreakInside = "avoid");
+
+  // Adjust tables to fit within the page.
+  clonedElement.querySelectorAll('table').forEach(table => {
+    table.style.width = "100%";
+    table.style.tableLayout = "auto";
+  });
+
+  // Fix the logo image aspect ratio.
+  const logoImg = clonedElement.querySelector('#logoImg');
+  if (logoImg) {
+    logoImg.style.width = "auto";
+    logoImg.style.height = "auto";
+    logoImg.style.maxWidth = "100%";
+    logoImg.style.objectFit = "contain";
+  }
+
+  // Remove the border from the logo container.
+  const logoCard = clonedElement.querySelector('.add-logo-card');
+  if (logoCard) {
+    logoCard.style.border = "none";
+  }
+
+  // Configure html2pdf options.
+  const opt = {
+    margin: 0,
+    filename: 'form.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  // Generate PDF using html2pdf.
+  html2pdf().set(opt).from(clonedElement).save().then(() => {
+    // Re-enable the download button and restore text.
+    downloadBtn.disabled = false;
+    downloadBtn.innerText = originalText;
+  });
+}
+
   </script>
 </body>
+
 </html>
